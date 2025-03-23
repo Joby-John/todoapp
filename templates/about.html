@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}
 About
-    
 {% endblock title %}
 
 {% block styles %}
@@ -12,7 +11,7 @@ About
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Prevent scrollbars due to floating hearts */
+            overflow: auto; /* Allow scrolling on small screens */
         }
         .container {
             background: rgba(255, 255, 255, 0.95);
@@ -69,11 +68,46 @@ About
                 opacity: 1;
             }
         }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px; /* Reduce padding for smaller screens */
+                margin: 10px; /* Reduce margin for smaller screens */
+                border-radius: 10px; /* Smaller border radius */
+            }
+
+            h1 {
+                font-size: 2rem; /* Smaller heading for mobile */
+            }
+
+            p {
+                font-size: 0.9rem; /* Smaller text for mobile */
+                line-height: 1.6; /* Adjust line height for readability */
+            }
+
+            .floating-heart {
+                font-size: 18px; /* Smaller hearts for mobile */
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem; /* Even smaller heading for very small screens */
+            }
+
+            p {
+                font-size: 0.85rem; /* Even smaller text for very small screens */
+            }
+
+            .container {
+                padding: 15px; /* Further reduce padding */
+            }
+        }
     </style>
 {% endblock styles %}
 
 {% block content %}
-
     <!-- About Section -->
     <div class="container">
         <h1 class="text-center">About Your To-Do App <span class="heart">♥</span></h1>
@@ -115,6 +149,12 @@ About
         }
 
         // Generate hearts at regular intervals
-        setInterval(createHeart, 500); // Create a new heart every 500ms
+        let heartInterval = setInterval(createHeart, 500); // Create a new heart every 500ms
+
+        // Adjust heart generation for smaller screens
+        if (window.innerWidth <= 768) {
+            clearInterval(heartInterval); // Clear the previous interval
+            heartInterval = setInterval(createHeart, 1000); // Create fewer hearts on mobile
+        }
     </script>
 {% endblock content %}
