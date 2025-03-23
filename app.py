@@ -37,7 +37,7 @@ def home_page():
         db.session.commit()
 
     alltodo = Todo.query.all()
-    print(alltodo)
+    # print(alltodo)
     return render_template('index.html', alltodo = alltodo)
     # return 'Hello World'
 
@@ -72,4 +72,4 @@ def update(sno):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port = 8000)
+    app.run(debug=False, port = 8000)
