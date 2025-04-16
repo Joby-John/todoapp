@@ -70,6 +70,10 @@ def update(sno):
     rowToUpdate = Todo.query.filter_by(sno=sno).first()
     return render_template('update.html', rowToUpdate = rowToUpdate)
 
+@app.route('/doubts')
+def doubt():
+    return render_template('doubts.html')
+
 
 if __name__ == "__main__":
     app.run(debug=False, port = 8000)

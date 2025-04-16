@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Doubt Clearance
+{% endblock title %}
+
+{% block styles %}
+    <style>
+        body {
+            background: linear-gradient(to bottom, #ffdde1, #ee9ca7);
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin: 20px auto;
+            position: relative;
+            z-index: 10; /* Ensure content stays above floating elements */
+            max-width: 800px;
+        }
+
+        h2 {
+            color: #d81b60;
+            font-family: 'Georgia', serif;
+            font-size: 2rem;
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+
+        .btn-success {
+            background-color: #e91e63;
+            border-color: #e91e63;
+        }
+
+        .btn-success:hover {
+            background-color: #f06292;
+            border-color: #f06292;
+        }
+
+        .video-input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .video-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #e91e63;
+            border-radius: 30px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .video-input:focus {
+            border-color: #f06292;
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.2);
+        }
+
+        .go-btn {
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-top: 20px;
+            background: #000;
+            display: none; /* Hidden by default */
+        }
+
+        .video-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .instructions {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .instructions h4 {
+            color: #e91e63;
+            margin-top: 0;
+        }
+    </style>
+{% endblock styles %}
+
+{% block content %}
+    <div class="container">
+        <h2>Doubt Clearance</h2>
+        
+        <div class="video-input-container">
+            <input type="url" 
+                   id="youtubeUrl" 
+                   class="video-input" 
+                   placeholder="Paste YouTube video URL here..." 
+                   required>
+            <button id="goBtn" class="btn btn-success go-btn">GO</button>
+        </div>
+        
+        <div id="videoContainer" class="video-container">
+            <iframe id="videoPlayer" class="video-iframe" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen></iframe>
+        </div>
+        
+        <div class="instructions">
+            <h4>How to use:</h4>
+            <ol>
+                <li>Copy the URL of any YouTube video</li>
+                <li>Paste it in the input field above</li>
+                <li>Click "GO" to load the video</li>
+                <li>The video will appear below for your reference</li>
+            </ol>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/doubt-player.js') }}"></script>
+{% endblock content %}
