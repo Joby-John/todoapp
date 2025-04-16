@@ -3,11 +3,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const youtubeUrlInput = document.getElementById('youtubeUrl');
     const goBtn = document.getElementById('goBtn');
     const videoContainer = document.getElementById('videoContainer');
-    const videoPlayer = document.getElementById('videoPlayer');
+    let videoPlayer = document.getElementById('videoPlayer');
     
     // Configuration
     const PROXY_SERVER = 'https://youtube-proxy-2is6.onrender.com/proxy-youtube';
-    const LOAD_TIMEOUT = 10000; // 10 seconds timeout
+    const LOAD_TIMEOUT = 15000; // 15 seconds timeout
+    const ALLOWED_DOMAINS = ['yourwebsite.com', 'todoapp-babe.onrender.com'];
 
     // Create loading indicator
     const loadingIndicator = document.createElement('div');
@@ -15,6 +16,11 @@ document.addEventListener('DOMContentLoaded', function() {
     loadingIndicator.innerHTML = `
         <div class="spinner"></div>
         <p>Loading video...</p>
+        <div class="browser-warning" style="display:none; margin-top:10px;">
+            <p>If video doesn't load, try:</p>
+            <button class="reload-btn">Reload Video</button>
+            <button class="open-new-btn">Open in New Tab</button>
+        </div>
     `;
     videoContainer.parentNode.insertBefore(loadingIndicator, videoContainer);
 
@@ -38,6 +44,21 @@ document.addEventListener('DOMContentLoaded', function() {
             height: 30px;
             animation: spin 1s linear infinite;
             margin: 0 auto 10px;
+        }
+        .yt-loading-indicator .browser-warning {
+            background: rgba(255,255,255,0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        .yt-loading-indicator .browser-warning button {
+            margin: 5px;
+            padding: 5px 10px;
+            background: #e91e63;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -101,6 +122,21 @@ document.addEventListener('DOMContentLoaded', function() {
         return { valid: true, url: url };
     }
 
+    // Browser detection
+    function getBrowserSpecificConfig() {
+        const userAgent = navigator.userAgent;
+        const isChrome = /Chrome/.test(userAgent);
+        const isFirefox = /Firefox/.test(userAgent);
+        
+        return {
+            sandboxAttrs: isChrome ? 
+                'allow-same-origin allow-scripts allow-popups allow-presentation' :
+                'allow-same-origin allow-scripts allow-popups',
+            needsDelayedLoad: isChrome || isFirefox,
+            loadDelay: isFirefox ? 150 : 100 // Firefox needs slightly longer delay
+        };
+    }
+
     // Video loading with comprehensive error handling
     async function loadYouTubeVideo() {
         try {
@@ -118,8 +154,22 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Show loading state
             loadingIndicator.style.display = 'block';
+            loadingIndicator.querySelector('.browser-warning').style.display = 'none';
             videoContainer.style.display = 'none';
-            videoPlayer.src = '';
+            
+            // Get browser-specific configuration
+            const browserConfig = getBrowserSpecificConfig();
+            
+            // Create new iframe with browser-specific attributes
+            const newIframe = document.createElement('iframe');
+            newIframe.className = 'video-iframe';
+            newIframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+            newIframe.allowFullscreen = true;
+            newIframe.setAttribute('sandbox', browserConfig.sandboxAttrs);
+            
+            // Replace existing iframe
+            videoPlayer.replaceWith(newIframe);
+            videoPlayer = newIframe;
             
             // Prepare iframe URL with security parameters
             const iframeUrl = new URL(PROXY_SERVER);
@@ -128,33 +178,29 @@ document.addEventListener('DOMContentLoaded', function() {
             iframeUrl.searchParams.append('modestbranding', '1');
             iframeUrl.searchParams.append('rel', '0');
             iframeUrl.searchParams.append('enablejsapi', '1');
+            iframeUrl.searchParams.append('origin', window.location.origin);
             
             console.debug('Loading YouTube video:', {
                 videoId: videoId,
                 proxyUrl: iframeUrl.toString(),
+                browserConfig: browserConfig,
                 timestamp: new Date().toISOString()
             });
             
-            // Set up timeout
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Video load timeout')), LOAD_TIMEOUT));
+            // Browser-specific loading workaround
+            if (browserConfig.needsDelayedLoad) {
+                videoPlayer.src = '';
+                await new Promise(resolve => setTimeout(resolve, browserConfig.loadDelay));
+            }
             
-            // Load video with timeout protection
+            // Set the final URL
             videoPlayer.src = iframeUrl.toString();
             
+            // Wait for video to load or timeout
             await Promise.race([
-                new Promise((resolve) => { videoPlayer.onload = resolve; }),
-                timeoutPromise
+                new Promise(resolve => { videoPlayer.onload = resolve; }),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Load timeout')), LOAD_TIMEOUT))
             ]);
-            
-            // Force iframe reload (as requested)
-            try {
-                if (videoPlayer.contentWindow) {
-                    videoPlayer.contentWindow.location.reload(true);
-                }
-            } catch (e) {
-                console.warn('Soft reload failed:', e.message);
-            }
             
             // Show video
             videoContainer.style.display = 'block';
@@ -173,14 +219,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 timestamp: new Date().toISOString()
             });
             
-            loadingIndicator.style.display = 'none';
+            loadingIndicator.style.display = 'block';
+            loadingIndicator.querySelector('.browser-warning').style.display = 'block';
             videoContainer.style.display = 'none';
             
-            alert(`Failed to load video:\n${error.message}\n\nPlease check:
-1. The URL is correct (${youtubeUrlInput.value.trim() || 'empty'})
-2. The video is available
-3. Your network connection
-4. Proxy server is running (${PROXY_SERVER})`);
+            // Set up retry buttons
+            loadingIndicator.querySelector('.reload-btn').onclick = loadYouTubeVideo;
+            loadingIndicator.querySelector('.open-new-btn').onclick = () => {
+                window.open(`https://www.youtube.com/watch?v=${getYouTubeId(youtubeUrlInput.value.trim())}`, '_blank');
+            };
             
             youtubeUrlInput.focus();
         }
@@ -206,6 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
         youtubeUrlInput.focus();
         console.log('YouTube player initialized', {
             proxyServer: PROXY_SERVER,
+            userAgent: navigator.userAgent,
             readyState: document.readyState
         });
     }, 100);
