@@ -6,12 +6,12 @@
 {% block styles %}
     <style>
         body {
-            background: linear-gradient(to bottom, #ffdde1, #ee9ca7);
+            background: linear-gradient(to bottom, #cce7ff, #99ccff); /* Light blue gradient */
             min-height: 100vh;
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            overflow-x: hidden; /* Prevent horizontal scroll */
+            overflow-x: hidden;
         }
 
         .container {
@@ -21,30 +21,30 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             margin: 20px auto;
             position: relative;
-            z-index: 10; /* Ensure content stays above floating elements */
+            z-index: 10;
         }
 
         h2 {
-            color: #d81b60;
+            color: #0d47a1; /* Darker blue for headings */
             font-family: 'Georgia', serif;
             font-size: 2rem;
-            margin: 0; /* Remove default margin */
+            margin: 0;
         }
 
         .btn-success {
-            background-color: #e91e63;
-            border-color: #e91e63;
+            background-color: #1976d2; /* Medium blue */
+            border-color: #1976d2;
         }
 
         .btn-success:hover {
-            background-color: #f06292;
-            border-color: #f06292;
+            background-color: #42a5f5; /* Lighter blue on hover */
+            border-color: #42a5f5;
         }
 
         .alert-info {
-            background-color: #f8bbd0;
-            border-color: #f48fb1;
-            color: #c2185b;
+            background-color: #bbdefb;
+            border-color: #64b5f6;
+            color: #0d47a1;
         }
 
         .table {
@@ -54,52 +54,52 @@
         }
 
         .table th, .table td {
-            border-color: #f8bbd0;
+            border-color: #90caf9;
         }
 
         .floating-teddy {
             width: 120px;
             height: auto;
-            animation: float 4s infinite ease-in-out; /* Updated animation */
-            z-index: 20; /* Higher z-index to appear above the table */
-            margin-left: 20px; /* Add space between heading and image */
+            animation: float 4s infinite ease-in-out;
+            z-index: 20;
+            margin-left: 20px;
         }
 
         @keyframes float {
             0% {
-                transform: translateY(1rem); /* Start slightly above */
+                transform: translateY(1rem);
             }
             25% {
-                transform: translateY(-1.9rem); /* Jump up */
+                transform: translateY(-1.9rem);
             }
             30% {
-                transform: translateY(1rem); /* Land back */
+                transform: translateY(1rem);
             }
             40% {
-                transform: translateX(-10rem) translateY(1rem); /* Move to the left */
+                transform: translateX(-10rem) translateY(1rem);
             }
             50% {
-                transform: translateX(-10rem) translateY(-1.9rem); /* Jump up on the left */
+                transform: translateX(-10rem) translateY(-1.9rem);
             }
             60% {
-                transform: translateX(-10rem) translateY(1rem); /* Land back on the left */
+                transform: translateX(-10rem) translateY(1rem);
             }
             75% {
-                transform: translateX(0rem) translateY(1rem); /* Move back to the start */
+                transform: translateX(0rem) translateY(1rem);
             }
             90% {
-                transform: translateY(-0.5rem); /* Small hop */
+                transform: translateY(-0.5rem);
             }
             100% {
-                transform: translateY(1rem); /* Return to start */
+                transform: translateY(1rem);
             }
         }
 
-        /* Flexbox container for heading and Shitzu */
+        /* Flexbox container for heading and image */
         .heading-container {
             display: flex;
-            align-items: center; /* Vertically center items */
-            justify-content: space-around; /* Space between heading and image */
+            align-items: center;
+            justify-content: space-around;
             height: 100px;
         }
     </style>
@@ -109,7 +109,7 @@
     
     <!-- Add Todo Form -->
     <div class="container">
-        <h2>Add a Todo <span class="heart">♥</span></h2>
+        <h2>Add a Todo <span class="book">📖</span></h2>
         <hr>
         <form action="/" method="POST">
             <div class="mb-3">
@@ -126,9 +126,8 @@
 
     <!-- Todo List -->
     <div class="container my-5">
-        <!-- Flexbox container for heading and Shitzu -->
         <div class="heading-container">
-            <h2>Your Todos <span class="heart">♥</span></h2>
+            <h2>Your Todos <span class="book">📖</span></h2>
             <div class="floating-teddy">
                 <img src="{{ url_for('static', filename='images/shitzu.png') }}" alt="Shitzu">
             </div>

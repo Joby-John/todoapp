@@ -49,9 +49,9 @@ def delete(sno):
 
     return redirect('/')
     
-@app.route('/about')
-def about():
-    return render_template('about.html')
+# @app.route('/about')
+# def about():
+#     return render_template('about.html')
 
 @app.route('/update/<int:sno>', methods = ['GET', 'POST'])
 def update(sno):
@@ -70,9 +70,9 @@ def update(sno):
     rowToUpdate = Todo.query.filter_by(sno=sno).first()
     return render_template('update.html', rowToUpdate = rowToUpdate)
 
-@app.route('/doubts')
-def doubt():
-    return render_template('doubts.html')
+# @app.route('/doubts')
+# def doubt():
+#     return render_template('doubts.html')
 
 
 if __name__ == "__main__":
